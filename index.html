@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+
+<body>
+	<script>
+
+		function statusRandNum(max, min) {
+			return Math.floor(Math.random() * (max + 1 - min)) + min;
+		}
+
+		// playerのstatus数値の処理
+
+		const playerStatusArea = {
+			hp: { max: 50, min: 30 },
+			power: { max: 20, min: 10 },
+			defense: { max: 20, min: 10 }
+		}
+
+		const setPlayerStatus = Object.values(playerStatusArea).map(value => {
+			return statusRandNum(value.max, value.min)
+		})
+
+		const player = {
+			name: 'takanobu',
+			hp: setPlayerStatus[0],
+			power: setPlayerStatus[1],
+			defense: setPlayerStatus[2],
+			type: 'player'
+		}
+
+		// enemyのstatus数値の処理
+		const enemyStatusArea = {
+			hp: { max: 30, min: 15 },
+			power: { max: 15, min: 10 },
+			defense: { max: 15, min: 10 }
+		}
+
+		const setEnemyStatus = Object.values(enemyStatusArea).map(value => {
+			return statusRandNum(value.max, value.min)
+		})
+
+		const monster = {
+			name: 'スラリン',
+			hp: setEnemyStatus[0],
+			power: setEnemyStatus[1],
+			defense: setEnemyStatus[2],
+			type: 'enemy'
+		}
+
+		class Charactor {
+			constructor(status) {
+				this.name = status.name;
+				this.hp = status.hp;
+				this.power = status.power;
+				this.defense = status.defense;
+				this.type = status.type;
+				this.flag = true;
+			}
+
+			attack(enemyName, enemyDefence) {
+				let attack = Math.max(this.power - enemyDefence, 1)
+				return `${enemyName}に${attack}のダメージをあたえた!!`;
+			}
+
+			guard(enemyAttack) {
+				let damage = Math.max(enemyAttack - this.defense, 1);
+				this.hp -= damage;
+				if (this.hp <= 0) {
+					this.flag = false;
+					if (this.type === 'enemy') {
+						console.log('モンスターを倒した!!');
+					}else{
+						console.log('モンスターに負けてしまった...')
+					}
+				}
+
+			}
+
+		}
+
+		// 自分のキャラクター作成
+		const myCharactor = new Charactor(player);
+		console.log(myCharactor);
+		// モンスターとの遭遇
+		const enemy = new Charactor(monster);
+		console.log(enemy);
+		console.log(`${enemy.name}が現れた`);
+
+		// 戦闘開始
+		console.log('戦闘開始!!')
+		let turn = 0;
+
+		while (enemy.flag && myCharactor.flag) {
+			++turn;
+			console.log(`${turn}ターン目`);
+			console.log(`${myCharactor.name}の攻撃 ${myCharactor.attack(enemy.name, enemy.defense)}`);
+			enemy.guard(myCharactor.power);
+			if (enemy.flag === false) { break }
+			console.log(`${enemy.name}の攻撃${enemy.attack(myCharactor.name, myCharactor.defense)}`);
+			myCharactor.guard(enemy.power);
+			if(myCharactor.flag === false){break};
+			console.log(`${myCharactor.name}の残り体力は${myCharactor.hp}だ!!`)
+			console.log(`${enemy.name}の残りの体力は${enemy.hp}だ!!`)
+			console.log('次のターンへ')
+			}
+
+
+
+	</script>
+</body>
+
+</html>
